@@ -1,106 +1,89 @@
-// Описаний у документації
 import SimpleLightbox from "simplelightbox";
-// Додатковий імпорт стилів
 import "simplelightbox/dist/simple-lightbox.min.css";
-
-
-// Описаний у документації
 import iziToast from "izitoast";
-// Додатковий імпорт стилів
 import "izitoast/dist/css/iziToast.min.css";
 
+const fetchUsersBtn = document.querySelector(".form");
+const gallery = document.querySelector(".gallery");
+const textInput = document.querySelector('.text-input')
 
-const searchForm = document.getElementById("searchForm");
-const searchInput = document.getElementById("searchInput");
-const loader = document.getElementById("loader");
-const gallery = document.getElementById("gallery");
-const lightbox = new SimpleLightbox();
-
-searchForm.addEventListener("submit", function (e) {
-  e.preventDefault();
-  const searchTerm = searchInput.value.trim();
-
-  if (searchTerm !== "") {
-    showLoader();
-    clearGallery();
-
-    fetch(`https://pixabay.com/api/?key=${API_KEY}&q=${searchTerm}&image_type=photo&orientation=horizontal&safesearch=true`)
-      .then(response => response.json())
-      .then(data => {
-        hideLoader();
-
-        if (data.hits.length > 0) {
-          displayImages(data.hits);
-        } else {
-          showNoResultsMessage();
-        }
-      })
-      .catch(error => {
-        hideLoader();
-        showErrorToast("Error fetching images. Please try again.");
-        console.error("Error fetching images:", error);
-      });
-  }
+const modal = new SimpleLightbox('.gallery a', {
+  captionsData: 'alt',
+  captionDelay: 250,
 });
 
-function showLoader() {
-  loader.style.display = "block";
-}
+const loader = document.querySelector('.loader');
+  loader.style.display = 'none';
 
-function hideLoader() {
-  loader.style.display = "none";
-}
 
-function clearGallery() {
-  gallery.innerHTML = "";
-  lightbox.refresh();
-}
+fetchUsersBtn.addEventListener('submit', (event) => {
+  event.preventDefault();
+  const usersValue = textInput.value;
+  gallery.innerHTML = '';
 
-function displayImages(images) {
-  images.forEach(image => {
-    const card = createImageCard(image);
-    gallery.appendChild(card);
-  });
+  textInput.value = '';
+  loader.style.display = 'block';
 
-  lightbox.refresh();
-}
+  const searchParams = new URLSearchParams({
+  key: '41525979-544d9b4f8d317eee068e80d65',
+  q: usersValue,
+  image_type: 'photo',
+  orientation: 'horizontal',
+  safesearch: true
+});
 
-function createImageCard(image) {
-  const card = document.createElement("div");
-  card.classList.add("image-card");
+  fetch(`https://pixabay.com/api/?${searchParams}`)
+    .then((response) => {
+    loader.style.display = 'none';
+    
+      if (!response.ok) {
+        throw new Error(response.status);
+      }
+      return response.json();
+    })
+  .then((data) => {
+      if (data.hits.length === 0) {
+        iziToast.error({
+          message: 'Sorry, there are no images matching your search query. Please try again!',
+          messageColor: '#FAFAFB',
+          backgroundColor: '#EF4040',
+          position: 'topRight'
+        });
+        return;
+    };
+      data.hits.map(image => {
+        const card = imageCard(image);
+        gallery.appendChild(card);
+      });
+    
+      modal.refresh();
+    })
+  .catch((error) => {
+		console.error(error);
+  })
+});
 
-  const thumbnail = document.createElement("img");
-  thumbnail.src = image.webformatURL;
-  thumbnail.alt = image.tags;
-  thumbnail.addEventListener("click", () => {
-    lightbox.open({ items: [{ src: image.largeImageURL, title: image.tags }] });
-  });
+function imageCard(image) {
+  const card = document.createElement('div');
 
-  const likes = document.createElement("span");
-  likes.innerText = `Likes: ${image.likes}`;
-
-  const views = document.createElement("span");
-  views.innerText = `Views: ${image.views}`;
-
-  card.appendChild(thumbnail);
-  card.appendChild(likes);
-  card.appendChild(views);
+  card.innerHTML = `
+    <a href="${image.largeImageURL}">
+    <img src="${image.webformatURL}" alt="${image.tags}"></a>
+    <div class="info">
+    <div class="image-info">
+    <span>Likes</span>
+    <span class="image-value">${image.likes}</span></div>
+    <div class="image-info">
+    <span>Views</span>
+    <span class="image-value">${image.views}</span></div>
+    <div class="image-info">
+    <span>Comments</span>
+    <span class="image-value">${image.comments}</span></div>
+    <div class="image-info">
+    <span>Downloads</span>
+    <span class="image-value">${image.downloads}</span></div>
+    </div>
+  `;
 
   return card;
-}
-
-function showNoResultsMessage() {
-  iziToast.info({
-    title: "Sorry",
-    message: "There are no images matching your search query. Please try again.",
-    position: "topCenter",
-  });
-}
-
-function showErrorToast(message) {
-  iziToast.error({
-    title: "Error",
-    message: message,
-    position: "topCenter",
-  });
-}
+};

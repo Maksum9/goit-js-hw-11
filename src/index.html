@@ -1,25 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Image Search App</title>
-    <link rel="stylesheet" href="path/to/your/other/styles.css">
-    <link rel="stylesheet" href="path/to/simplelightbox.min.css">
-    <link rel="stylesheet" href="path/to/iziToast.min.css">
-</head>
-<body>
-    <form id="searchForm">
-        <input type="text" id="searchInput" placeholder="Enter your search term">
-        <button type="submit">Search</button>
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vanilla App Template</title>
+    <link rel="stylesheet" href="./css/styles.css" />
+  </head>
+  <body>
+    <form class="form">
+    <input type="text" placeholder="Search images..." class="text-input">
+    <button type="submit" class="btn">Search</button>
     </form>
-
-    <div id="gallery"></div>
-
-    <div id="loader" class="hidden"></div>
-
-    <script type="module" src="./src/main.js"></script>
-    <script src="path/to/iziToast.min.js"></script>
-    <script type="module" src="path/to/simplelightbox.min.js"></script>
-</body>
+    <span class="loader"></span>
+    <ul class="gallery"></ul>
+    <script type="module" src="./main.js"></script>
+  </body>
 </html>
