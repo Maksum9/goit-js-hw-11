@@ -1,9 +1,14 @@
-import SimpleLightbox from "./simplelightbox.min.js";
-import "./simple-lightbox.min.css";
+// Описаний у документації
+import SimpleLightbox from "simplelightbox";
+// Додатковий імпорт стилів
+import "simplelightbox/dist/simple-lightbox.min.css";
 
 
-import iziToast from "./iziToast.min.js";
-import "./iziToast.min.css";
+// Описаний у документації
+import iziToast from "izitoast";
+// Додатковий імпорт стилів
+import "izitoast/dist/css/iziToast.min.css";
+
 
 const searchForm = document.getElementById("searchForm");
 const searchInput = document.getElementById("searchInput");
